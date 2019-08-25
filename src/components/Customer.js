@@ -1,38 +1,21 @@
 import React from 'react';
+import TableRow from '@material-ui/core/TableRow' //CSS같은 스타일을 위한 스타일 프레임워크 material-ui
+import TableCell from '@material-ui/core/TableCell'
 
 //Customer 클래스에 대한 계층적 구조 CustomerProfile, CustomerInfo
 //component는 기본적으로 props 프로퍼티를 가지고 있다. 파라미터값을 가지고 있는 객체.
+//따라서 props를 따로 정의하거나 선언할 필요없이 사용만하면 된다.
 class Customer extends React.Component{
     render(){
         return(
-            <div>
-                <Customerprofile id={this.props.id} image={this.props.image} name={this.props.name}/>
-                <CustomerInfo birthday={this.props.birthday} gender={this.props.gender} job={this.props.job}/>
-            </div>
-        );//return
-    }//render
-}//class
-
-class Customerprofile extends React.Component{
-    render(){
-        return(
-            <div>
-                <img src={this.props.image} alt="profile"/>
-                <h2>{this.props.name}({this.props.id})</h2>
-            </div>
-        );//return
-    }//render
-}//class
-
-class CustomerInfo extends React.Component{
-    render(){
-        return(
-            <div>
-                <p>{this.props.name}</p>
-                <p>{this.props.birthday}</p>
-                <p>{this.props.gender}</p>
-                <p>{this.props.job}</p>
-            </div>
+            <TableRow>
+                <TableCell>{this.props.id}</TableCell>
+                <TableCell><img src={this.props.image} alt="profile" /></TableCell>
+                <TableCell>{this.props.name}</TableCell>
+                <TableCell>{this.props.birthday}</TableCell>
+                <TableCell>{this.props.gender}</TableCell>
+                <TableCell>{this.props.job}</TableCell>
+            </TableRow>
         );//return
     }//render
 }//class
