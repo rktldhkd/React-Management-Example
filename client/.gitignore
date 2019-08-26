@@ -1,8 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-#여기에 명시한 것들은 github에 올리지 않는다. node_modules는 프로젝트에 필요한 모듈의 집합이므로
-#모듈이 많을 땐 오래걸리고 비효율적일 수 있기 때문에 올리지 않는다. 프로젝트만 받고 필요한 모듈은 그때 또 받는 형식이다.
 /node_modules
 /.pnp
 .pnp.js
