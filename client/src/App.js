@@ -15,7 +15,7 @@ const styles =  theme => ({
   //DOM객체의 ID
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3),
     overflowX: "auto"
   },
   table: {
@@ -23,33 +23,28 @@ const styles =  theme => ({
   }
 });//styles
 
-const customers = [
-  {
-    'id': 1,
-    'image': 'https://placeimg.com/64/64/1',
-    'name': '홍길동',
-    'birthday': '991111',
-    'gender': '남자',
-    'job': '무'
-  },
-  {
-    'id': 2,
-    'image': 'https://placeimg.com/64/64/2',
-    'name': '청길동',
-    'birthday': '990111',
-    'gender': '남자',
-    'job': '무'
-  },
-  {
-    'id': 3,
-    'image': 'https://placeimg.com/64/64/3',
-    'name': '이선계',
-    'birthday': '110111',
-    'gender': '남자',
-    'job': '무'
-  }
-]
 class App extends React.Component{
+
+  state = {
+    customers: ""
+  }//값이 변경될 수 있는 변수 state의 변수 지정영역
+
+  componentDidMount() {
+    //순서
+    //1. callApi함수를 호출하여 body(파라미터들)을 가져온다.
+    //2. then()함수의 response에 body를 담는다.
+    //3. 그리고 그 response customers에 세팅한다.
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log(err));
+  }//componentDidMount()
+
+  callApi = async () => {
+    const response = await fetch('/api/customers');
+    const body = await response.json(); //서버에서 데이터 받아오는 부분
+    return body;
+  }
+
   render(){
     const { classes } = this.props; //스타일 적용을 위한 변수 classes 선언. <- css 스타일 적용위한 코드 1
     return (//위에서 정의한 스타일값들 적용 className 옵션. <- css 스타일 적용위한 코드 2
@@ -68,7 +63,10 @@ class App extends React.Component{
           <TableBody>
             { // c: 해당 index별 고객정보객체.
               //map을 사용할때는 꼭 key값을 지정해줘야한다. 안하면 에러.
-              customers.map(c => {
+              //3항연산자 사용. 비동기 방식으로 데이터 불러오는 거라, 처음엔 데이터가 없다.
+              //따라서 3항연산자로 데이터가 있는지 물어본 후, 상황에 맞는 화면 출력
+              this.state.customers ? 
+              this.state.customers.map(c => {
                 return(
                   <Customer 
                     key={c.id}
@@ -81,6 +79,7 @@ class App extends React.Component{
                   />
                 );//inner return
               })//map
+              : ".....없어"
             }
           </TableBody>
         </Table>
