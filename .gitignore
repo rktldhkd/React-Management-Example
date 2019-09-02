@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+#github에 push시, 올리지 않을 데이터의 경로 설정.
+
+#upload - files, images, etc...
+/upload
+
 #database
 /database.json
 

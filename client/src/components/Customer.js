@@ -7,10 +7,14 @@ import TableCell from '@material-ui/core/TableCell'
 //따라서 props를 따로 정의하거나 선언할 필요없이 사용만하면 된다.
 class Customer extends React.Component{
     render(){
+        const img_style = {
+            width:100
+        };
+
         return(
             <TableRow>
                 <TableCell>{this.props.id}</TableCell>
-                <TableCell><img src={this.props.image} alt="profile" /></TableCell>
+                <TableCell><img src={this.props.image} alt="profile" style={img_style}/></TableCell>
                 <TableCell>{this.props.name}</TableCell>
                 <TableCell>{this.props.birthday}</TableCell>
                 <TableCell>{this.props.gender}</TableCell>

@@ -2,6 +2,7 @@ import React from 'react';
 import logo, { ReactComponent } from './logo.svg';
 import './App.css';
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 import Paper from '@material-ui/core/Paper'; 
 import Table from '@material-ui/core/Table'; //스타일 프레임워크 material-ui
 import TableHead from '@material-ui/core/TableHead';
@@ -30,10 +31,31 @@ const styles =  theme => ({
 
 class App extends React.Component{
 
-  state = {
-    customers: "",
-    completed: 0 //progress bar의 게이지값.
-  }//값이 변경될 수 있는 변수 state의 변수 지정영역
+  // state = {
+  //   customers: "",
+  //   completed: 0 //progress bar의 게이지값.
+  // }//값이 변경될 수 있는 변수 state의 변수 지정영역
+
+  constructor(props){
+    super(props);
+    this.state={
+      customers: '',
+      completed: 0
+    }
+  }//생성자
+
+  //데이터 갱신. 값이 갱신되면, 화면의 데이터도 같이 갱신되어야 한다.
+  stateRefresh = () =>{
+    this.setState({
+      customer: '',
+      completed: 0
+    });//setState
+    
+    //데이터 불러오기
+    this.callApi()
+      .then(res => this.setState({customers: res}))
+      .catch(err => console.log(err));
+  }//stateRefresh()
 
   componentDidMount() {
     //데이터가 얼마 없어서 progress bar가 보일 새 없이 지나가버리면, 아래의 데이터를 가져오는
@@ -64,47 +86,51 @@ class App extends React.Component{
     //이 classes 객체와 styles객체에서 정의한 스타일을 연동 가능. html의 className 속성에 styles에서 정의한 이름 할당.
     const { classes } = this.props; //스타일 적용을 위한 변수 classes 선언. <- css 스타일 적용위한 코드 1
     return (//위에서 정의한 스타일값들 적용 className 옵션. <- css 스타일 적용위한 코드 2
-      <Paper className={classes.root}>
-        <Table className={classes.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>번호</TableCell>
-              <TableCell>이미지</TableCell>
-              <TableCell>이름</TableCell>
-              <TableCell>생년월일</TableCell>
-              <TableCell>성별</TableCell>
-              <TableCell>직업</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            { // c: 해당 index별 고객정보객체.
-              //map을 사용할때는 꼭 key값을 지정해줘야한다. 안하면 에러.
-              //3항연산자 사용. 비동기 방식으로 데이터 불러오는 거라, 처음엔 데이터가 없다.
-              //따라서 3항연산자로 데이터가 있는지 물어본 후, 상황에 맞는 화면 출력
-              this.state.customers ? 
-              this.state.customers.map(c => {
-                return(
-                  <Customer 
-                    key={c.id}
-                    id={c.id}
-                    image={c.image}
-                    name={c.name} 
-                    birthday={c.birthday}
-                    gender={c.gender}
-                    job={c.job}
-                  />
-                );//inner return
-              })//map
-              : 
+      <div>
+        <Paper className={classes.root}>
+          <Table className={classes.table}>
+            <TableHead>
               <TableRow>
-                <TableCell colSpan="6" align="center">
-                  <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
-                </TableCell>
+                <TableCell>번호</TableCell>
+                <TableCell>이미지</TableCell>
+                <TableCell>이름</TableCell>
+                <TableCell>생년월일</TableCell>
+                <TableCell>성별</TableCell>
+                <TableCell>직업</TableCell>
               </TableRow>
-            }
-          </TableBody>
-        </Table>
-      </Paper>
+            </TableHead>
+            <TableBody>
+              { // c: 해당 index별 고객정보객체.
+                //map을 사용할때는 꼭 key값을 지정해줘야한다. 안하면 에러.
+                //3항연산자 사용. 비동기 방식으로 데이터 불러오는 거라, 처음엔 데이터가 없다.
+                //따라서 3항연산자로 데이터가 있는지 물어본 후, 상황에 맞는 화면 출력
+                this.state.customers ? 
+                this.state.customers.map(c => {
+                  return(
+                    <Customer
+                      key={c.id}
+                      id={c.id}
+                      image={c.image}
+                      name={c.name} 
+                      birthday={c.birthday}
+                      gender={c.gender}
+                      job={c.job}
+                    />
+                  );//inner return
+                })//map
+                : 
+                <TableRow>
+                  <TableCell colSpan="6" align="center">
+                    <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
+                  </TableCell>
+                </TableRow>
+              }
+            </TableBody>
+          </Table>
+        </Paper>
+        
+        <CustomerAdd stateRefresh={this.stateRefresh}/>
+      </div>
     );//return
   }//render()
 }//class
