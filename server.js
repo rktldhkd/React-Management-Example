@@ -46,7 +46,7 @@ app.get('/api/customers', (request, response) => {
     // //배열형태의 데이터를 넣어주기만 하면 알아서 json 형태로 client에 응답한다.
     // response.send();//send()
     connection.query(
-        "SELECT * FROM customer",
+        "SELECT * FROM customer WHERE isDeleted=0",
         (err, rows, fields) => {
             if(err){console.log(err);}
             //console.log(rows);
@@ -58,8 +58,10 @@ app.get('/api/customers', (request, response) => {
 //multer.single : 사용자가 전송한 데이터에서 만약에 파일이 포함되어 있다면 파일을 가공해서 request객체에 file이라는 프로퍼티를 multer라는 모듈을 통해서 추가하는 코드. 
 //single() 안의 매개인자 문자열은 form양식의 input file의 name 값과 같게해준다.
 app.post('/api/customers', upload.single('image'), (request, response) => {
-    let sql = 'INSERT INTO customer(image, name, birthday, gender, job) VALUES(?, ?, ?, ?, ?)';
+    let sql = 'INSERT INTO customer(image, name, birthday, gender, job, createdDate, isDeleted) VALUES(?, ?, ?, ?, ?, NOW(), 0)';
     
+    //form데이터를 받을 때 사용하는 body-poarser의 body.
+    //post로 요청된 body를 쉽게 추출할 수 있는 모듈이다. 추출된 결과는 request객체(IncomingMessage 타입)에 body 속성으로 저장된다
     //서버로 넘어온 form데이터들 변수에 할당.
     //서버에서 이미지를 못받아와서 강제로 5000포트 추가했다.
     let image = 'http://localhost:5000' + '/image/' + request.file.filename; //이미지파일 upload폴더에 업로드. 바로 위의 app.use에서 /image와 ./upload폴더 맵핑했다.
@@ -74,9 +76,21 @@ app.post('/api/customers', upload.single('image'), (request, response) => {
     //실제로 쿼리문에 form 데이터값들 바인딩 할당.
     connection.query(sql, params, 
         (err, rows, fields) => {
+            if(err){console.log(err);}
             response.send(rows); //성공적으로 데이터 입력 시, 관련 메시지를 client에 전송
         }
     )//query()
 });//post
+
+app.delete('/api/customers/:id', (req,res) => {
+    let sql = 'UPDATE customer SET isDeleted = 1 WHERE id= ?';
+    let params = [req.params.id];
+    connection.query(sql, params,
+        (err, rows, fields) => {
+            if(err){console.log(err);}
+            res.send(rows);
+        }//function
+    );//query()
+})//delete()
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
