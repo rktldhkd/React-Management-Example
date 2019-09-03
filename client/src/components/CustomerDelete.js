@@ -41,6 +41,10 @@ class CustomerDelete extends React.Component{
     render(){
         return(
             <div>
+                {/* 
+                modal의 popup으로 삭제기능 바꾸기 전의 화면
+                <button onClick={(e) => {this.deleteCustomer(this.props.id)}}>삭제</button> 
+                */}
                 <Button variant="contained" color="secondary" onClick={this.handleClickOpenPopup}>삭제</Button>
                 <Dialog open={this.state.open} onClose={this.handleClickClosePopup}>
                     <DialogTitle onClose={this.handleClickClosePopup}>삭제 경고</DialogTitle>

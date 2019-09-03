@@ -13,20 +13,87 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from '@material-ui/core/styles';
 import { async } from 'rxjs/internal/scheduler/async';
 
+//for app bar with search field. 화면 상단의 검색창을 포함한 타이틀/메뉴바
+//https://material-ui.com/components/app-bar/
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import InputBase from '@material-ui/core/InputBase';
+import { fade, makeStyles } from '@material-ui/core/styles';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+
 //css 스타일 적용위한 변수 선언. 여기에 스타일 지정
 const styles = theme => ({
   //DOM객체의 ID
   root: {
     width: '100%',
-    marginTop: theme.spacing(3), //여분 공간을 주는 것.
-    overflowX: "auto"
+    minWidth: 1080
   },
-  table: {
-    minWidth: 1400
+  paper: {
+    marginLeft: 18,
+    marginRight: 18
   },
   progress: {//progress bar 스타일
     margin: theme.spacing(2)
-  }
+  },
+  tableHead: {
+    fontSize: '1.2rem'
+  },
+  menu: {
+    margin: 15,
+    marginBottom: 15,
+    display: 'flex',
+    justifyContent: 'center' //가운데정렬
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block'
+    }
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(1),
+      width: 'auto'
+    }
+  },
+  searchIcon: {
+    width: theme.spacing(7),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inputRoot: {
+    color: 'inherit',
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 7),
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      width: 120,
+      '&:focus': {
+        width: 200,
+      },
+    },
+  },
 });//styles
 
 class App extends React.Component{
@@ -85,19 +152,63 @@ class App extends React.Component{
   render(){
     //이 classes 객체와 styles객체에서 정의한 스타일을 연동 가능. html의 className 속성에 styles에서 정의한 이름 할당.
     const { classes } = this.props; //스타일 적용을 위한 변수 classes 선언. <- css 스타일 적용위한 코드 1
+    const headCellList = ["번호", "이미지", "이름", "생년월일", "성별", "직업", "설정"];
+    
     return (//위에서 정의한 스타일값들 적용 className 옵션. <- css 스타일 적용위한 코드 2
-      <div>
-        <Paper className={classes.root}>
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="open drawer"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography className={classes.title} variant="h6" noWrap>
+              고객 관리 시스템
+            </Typography>
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <SearchIcon />
+              </div>
+              <InputBase
+                placeholder="Search"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+            </div>
+          </Toolbar>
+        </AppBar>
+        
+        <div className={classes.menu}>
+          <CustomerAdd stateRefresh={this.stateRefresh}/>
+        </div>
+
+        <Paper className={classes.paper}>
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>번호</TableCell>
-                <TableCell>이미지</TableCell>
-                <TableCell>이름</TableCell>
-                <TableCell>생년월일</TableCell>
-                <TableCell>성별</TableCell>
-                <TableCell>직업</TableCell>
-                <TableCell>설정</TableCell>
+                {
+                  /*
+                  // <TableCell>번호</TableCell>
+                  // <TableCell>이미지</TableCell>
+                  // <TableCell>이름</TableCell>
+                  // <TableCell>생년월일</TableCell>
+                  // <TableCell>성별</TableCell>
+                  // <TableCell>직업</TableCell>
+                  // <TableCell>설정</TableCell>
+                  */
+                }
+                {
+                  headCellList.map(c => {
+                    return <TableCell className={classes.tableHead}>{c}</TableCell>;
+                  })
+                }
               </TableRow>
             </TableHead>
             <TableBody>
@@ -113,7 +224,7 @@ class App extends React.Component{
                       id={c.id}
                       image={c.image}
                       name={c.name} 
-                      birthday={c.birthday}
+                      birthday={c.birthday.substr(0,10)}
                       gender={c.gender}
                       job={c.job}
                       stateRefresh={this.stateRefresh}
@@ -130,8 +241,6 @@ class App extends React.Component{
             </TableBody>
           </Table>
         </Paper>
-        
-        <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
     );//return
   }//render()

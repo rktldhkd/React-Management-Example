@@ -4,8 +4,17 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import { MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';//폰트 적용 위함
+
+//폰트적용 위함
+const theme = createMuiTheme({
+    typography: {
+        fontFamily: '"Noto Sans KR", serif',
+    }
+});
+
 //App 클래스르 inde.html의 id가 root태그 그려라.
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<MuiThemeProvider theme={theme}><App /></MuiThemeProvider>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
