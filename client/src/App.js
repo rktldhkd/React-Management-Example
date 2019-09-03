@@ -107,7 +107,8 @@ class App extends React.Component{
     super(props);
     this.state={
       customers: '',
-      completed: 0
+      completed: 0,
+      searchKeyword: ''
     }
   }//생성자
 
@@ -115,7 +116,8 @@ class App extends React.Component{
   stateRefresh = () =>{
     this.setState({
       customer: '',
-      completed: 0
+      completed: 0,
+      searchKeyword: ''
     });//setState
     
     //데이터 불러오기
@@ -149,11 +151,38 @@ class App extends React.Component{
     this.setState({ completed: completed>=100 ? 0:completed+1 });
   }//progress()
 
+  //사용자가 값을 입력할때마다 DOM객체에 최신화해주는 기능.
+  handleValueChange = (e) =>{
+    let nextState = {};
+    nextState[e.target.name] = e.target.value;
+    this.setState(nextState);
+  }
+
   render(){
     //이 classes 객체와 styles객체에서 정의한 스타일을 연동 가능. html의 className 속성에 styles에서 정의한 이름 할당.
     const { classes } = this.props; //스타일 적용을 위한 변수 classes 선언. <- css 스타일 적용위한 코드 1
     const headCellList = ["번호", "이미지", "이름", "생년월일", "성별", "직업", "설정"];
     
+    //검색바에서 해당 고객에대해서 검색하고, 있으면 그 고객만 출력, 없으면 전체 출력.
+    const filteredComponents = (data) =>{
+      data = data.filter((c) => {
+        //console.log("c.name.indexOf : " + c.name.indexOf(this.state.searchKeyword))
+        return c.name.indexOf(this.state.searchKeyword) > -1;
+      });//data 
+      return data.map((c) => {
+        return <Customer 
+                  stateRefresh= {this.stateRefresh}
+                  key= {c.id}
+                  id= {c.id}
+                  image= {c.image}
+                  name= {c.name}
+                  birthday= {c.birthday}
+                  gender= {c.gender}
+                  job= {c.job}
+                />
+      })//map
+    };
+
     return (//위에서 정의한 스타일값들 적용 className 옵션. <- css 스타일 적용위한 코드 2
       <div className={classes.root}>
         <AppBar position="static">
@@ -180,6 +209,10 @@ class App extends React.Component{
                   input: classes.inputInput,
                 }}
                 inputProps={{ 'aria-label': 'search' }}
+                name="searchKeyword"
+                id="searchKeyword"
+                value={this.state.searchKeyword}
+                onChange={this.handleValueChange}
               />
             </div>
           </Toolbar>
@@ -217,21 +250,25 @@ class App extends React.Component{
                 //3항연산자 사용. 비동기 방식으로 데이터 불러오는 거라, 처음엔 데이터가 없다.
                 //따라서 3항연산자로 데이터가 있는지 물어본 후, 상황에 맞는 화면 출력
                 this.state.customers ? 
-                this.state.customers.map(c => {
-                  return(
-                    <Customer
-                      key={c.id}
-                      id={c.id}
-                      image={c.image}
-                      name={c.name} 
-                      birthday={c.birthday.substr(0,10)}
-                      gender={c.gender}
-                      job={c.job}
-                      stateRefresh={this.stateRefresh}
-                    />
-                  );//inner return
-                })//map
-                : 
+                  filteredComponents(this.state.customers) //검색기능 추가 이후 코드
+                  /*
+                  검색기능 추가 이전 코드
+                  {this.state.customers.map(c=> {
+                    return(<Customer 
+                            stateRefresh= {this.stateRefresh}
+                            key= {c.id}
+                            id= {c.id}
+                            image= {c.image}
+                            name= {c.name}
+                            birthday= {c.birthday}
+                            gender= {c.gender}
+                            job= {c.job}
+                            />
+                          )
+                    })
+                  }
+                  */
+                  : 
                 <TableRow>
                   <TableCell colSpan="6" align="center">
                     <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />

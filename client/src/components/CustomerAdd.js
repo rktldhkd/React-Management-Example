@@ -61,7 +61,7 @@ class CustomerAdd extends React.Component{
     handleValueChange = (event) => {
         let nextState = {};
         nextState[event.target.name] = event.target.value;
-        this.setState(nextState);
+        this.setState(nextState); //실제 적용
     }//handleValueChange()
 
     addCustomer = () => {
