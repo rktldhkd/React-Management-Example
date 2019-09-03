@@ -14,7 +14,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { async } from 'rxjs/internal/scheduler/async';
 
 //css 스타일 적용위한 변수 선언. 여기에 스타일 지정
-const styles =  theme => ({
+const styles = theme => ({
   //DOM객체의 ID
   root: {
     width: '100%',

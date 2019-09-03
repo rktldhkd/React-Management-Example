@@ -1,5 +1,18 @@
 import React from 'react';
 import { post } from 'axios';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import {withStyles} from '@material-ui/core/styles'; //스타일 적용위함
+
+const styles = theme => ({
+    hidden: {
+        display: 'none'
+    }
+})//styles
 
 class CustomerAdd extends React.Component{
     constructor(props){
@@ -10,7 +23,8 @@ class CustomerAdd extends React.Component{
             birthday: '',
             gender: '',
             job: '',
-            fileName: ''
+            fileName: '',
+            open: false
         }//state 정의
     }//생성자
 
@@ -27,7 +41,8 @@ class CustomerAdd extends React.Component{
             birthday: '',
             gender: '',
             job: '',
-            fileName: ''
+            fileName: '',
+            open: false
         })
     }//handleForSubmit()
 
@@ -68,9 +83,68 @@ class CustomerAdd extends React.Component{
         return post(url, formData, config); //해당 url에 formData객체를 config에 맞게 서버로 전송. 
     }//addCustomer()
 
+    handleClickOpenPopup = () => {
+        this.setState({
+            open: true
+        })
+    }//handleClickOpenPopup()
+
+    handleClickClosePopup = () => {
+        this.setState({ //submit후, 양식을 빈칸으로 만듦
+            file: null,
+            userName: '',
+            birthday: '',
+            gender: '',
+            job: '',
+            fileName: '',
+            open: false
+        });//setState
+    }//handleClickOpenPopup()
+
     render(){
-        //onChange 속성 : 값이 변경되면 감지하는 함수 선택
+        const { classes } = this.props;
+        //onChange 속성 : 값이 변경되면 감지하는 함수 선택.
+        //variant 속성 : 디자인의 종류. 객체의 모양 설정.
+        //color 속성 : 객체의 색깔 설정.
         return(
+            <div>
+                <Button variant="contained" color="primary" onClick={this.handleClickOpenPopup}>
+                    고객 추가하기
+                </Button>
+                
+                {/* dialog객체의 open 속성에 따라 팝업창이 켜지고 꺼진다. */}
+                <Dialog open={this.state.open} onClose={this.handleClickClosePopup}>
+                    <DialogTitle>고객 추가</DialogTitle>
+                    <DialogContent>
+                        {/*
+                            accept 속성 : 해당 객체에 입력할 수 있는 값 설정. 여기선 image만 허용했다.
+                            input태그 hidden상태로 만들고 파일만 나르는 용도로 사용.
+                            화면에 출력하는 버튼 부분은 label태그 이하 내용.
+                            htmlFor 속성으로 input file 태그와 label태그 연동
+                        */}
+                        <input type="file" className={classes.hidden} accept="image/*" id="raised-button-file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} />
+                        <label htmlFor="raised-button-file">
+                            <Button variant="contained" color="primary" component="span" name="file">
+                                {this.state.fileName === "" ? "프로필 이미지 선택" : this.state.fileName}
+                            </Button>
+                        </label>
+                        <br/>
+
+                        <div><TextField label="이름" type="text" name="userName" id="userName" value={this.state.userName} onChange={this.handleValueChange} /></div>
+                        <div><TextField label="생년월일" type="text" name="birthday" id="birthday" value={this.state.birthday} onChange={this.handleValueChange} /></div>
+                        <div><TextField label="성별" type="text" name="gender" id="gender" value={this.state.gender} onChange={this.handleValueChange} /></div>
+                        <div><TextField label="직업" type="text" name="job" id="job" value={this.state.job} onChange={this.handleValueChange} /></div>
+                    </DialogContent>
+
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={this.handleForSubmit}>추가</Button>
+                        <Button variant="outlined" color="primary" onClick={this.handleClickClosePopup}>닫기</Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+
+            /* 팝업창으로 띄우기 전, 화면으로 볼때의 코드
+            //modal로 띄울때는 input을 import한 TextField로 대체한다. 그리고 label 속성에 항목명(이름/생년월일/성별/직업)을 설정한다.
             <form onSubmit={this.handleForSubmit} encType="multipart/form-data">
                 <h1>고객 추가</h1>
                 <p>
@@ -92,9 +166,10 @@ class CustomerAdd extends React.Component{
                     <button type="submit">추가하기</button>
                 </p>
             </form>
-        )//return
+            */
+        );//return
     }//render()
 
 }//class
 
-export default CustomerAdd;
+export default withStyles(styles)(CustomerAdd);
